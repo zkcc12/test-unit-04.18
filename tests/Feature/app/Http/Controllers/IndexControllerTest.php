@@ -7,11 +7,11 @@ use Tests\TestCase;
 
 class IndexControllerTest extends TestCase
 {
-  public function setUp()
-    {
-        parent::setUp();
-        exec('php artisan migrate:refresh');
-    }
+    public function setUp()
+      {
+          parent::setUp();
+          exec('php artisan migrate:refresh');
+      }
     /**
      * Vérifie que la page index retourne un code 200
      *
@@ -32,6 +32,22 @@ class IndexControllerTest extends TestCase
      *
      * 2 Points
      */
+     public function testIndex_AddMember_Redirect()
+     {
+         // Arrange
+         $email = 'john.doe@domain.tld';
+
+         $response = $this->post('/lists/create', [
+             Member::EMAIL => $email
+         ]);
+         // Act
+         // Assert
+         $response->assertRedirect('/');
+         $response->assertSessionHas('alert', [
+             'message' => 'success_message',
+             'type' => 'success'
+         ]);
+     }
 
     /**
      * Vérifie que l'ajout d'un email (john.doe@domain.tld) existant redirige vers /

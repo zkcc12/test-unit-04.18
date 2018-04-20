@@ -1,7 +1,9 @@
 <?php
 namespace App\Models;
 
-class Member
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class Member extends Authenticatable
 {
     public const EMAIL = 'email';
 

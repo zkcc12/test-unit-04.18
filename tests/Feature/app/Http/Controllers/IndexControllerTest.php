@@ -7,11 +7,24 @@ use Tests\TestCase;
 
 class IndexControllerTest extends TestCase
 {
+  public function setUp()
+    {
+        parent::setUp();
+        exec('php artisan migrate:refresh');
+    }
     /**
      * Vérifie que la page index retourne un code 200
      *
      * 2 Points
      */
+     public function testIndex_Code200()
+     {
+         // Arrange
+         // Act
+         $response = $this->get('/');
+         // Assert
+         $response->assertStatus(200);
+     }
 
     /**
      * Vérifie que la redirection est bien / après l'ajout d'un email
@@ -32,11 +45,17 @@ class IndexControllerTest extends TestCase
         // Arrange
         $email = 'john.doe@domain.tld';
 
-        factory(Member::class)->create([
+        $response = $this->post('/lists/create', [
             Member::EMAIL => $email
         ]);
         // Act
         // Assert
+        $response->assertRedirect('/');
+        $response->assertStatus(302);
+        $response->assertSessionHas('alert', [
+            'message' => 'success_message',
+            'type' => 'success'
+        ]);
     }
 
     /**
@@ -44,4 +63,14 @@ class IndexControllerTest extends TestCase
      *
      * 2 Points
      */
+     public function testAddMail_RequiredFields_ErrorCase()
+    {
+        // Arrange
+        $response = $this->post('/lists/create', [
+            Member::EMAIL => ''
+        ]);
+
+        // Assert
+        $response->assertStatus(500);
+    }
 }
